@@ -1,0 +1,41 @@
+class linearRegression {
+    private final static int ARRAY_LENGTH = 13;
+    private double m, b, sumX = 0, sumY = 0, sumXSquared = 0, sumXY = 0;
+
+    void fsumX(double[] x) {
+        for (int i = 0; i < ARRAY_LENGTH; i++)
+            sumX += x[i];
+    }
+
+    void fsumXSquared(double[] x) {
+        for (int i = 0; i < ARRAY_LENGTH; i++)
+            sumXSquared += (x[i]) * (x[i]);
+    }
+
+    void fsumY(double[] y) {
+        for (int i = 0; i < ARRAY_LENGTH; i++)
+            sumY += y[i];
+    }
+
+    void fsumXY(double[] x, double[] y) {
+        for (int i = 0; i < ARRAY_LENGTH; i++)
+            sumXY += (x[i] * y[i]);
+    }
+
+    void setSlope() {
+        m = ((ARRAY_LENGTH * sumXY) - (sumX * sumY)) / ((ARRAY_LENGTH * sumXSquared) - (sumX * sumX));
+    }
+
+    double getSlope() {
+        return m;
+    }
+
+    void setOrigin() {
+        b = ((sumY-(m*sumX))/ARRAY_LENGTH)+.8;
+    }
+
+    double getOrigin() {
+        return b;
+    }
+
+}
