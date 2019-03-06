@@ -8,7 +8,7 @@ public class ventana extends JFrame {
     private JButton printB, calculateB;
     @SuppressWarnings("FieldCanBeLocal")
     private JPanel initPanel, tablePanel;
-    //private JScrollPane scrollpane;
+    private JScrollPane scrollpane;
     private JTable table;
     @SuppressWarnings("FieldCanBeLocal")
     private JLabel title, initYearL, noYearsL, yearToPredictL;
@@ -59,11 +59,13 @@ public class ventana extends JFrame {
         initPanel.add(initYearTF);
         initPanel.add(noYearsTF);
         initPanel.add(yearToPredictTF);
-
+        tablePanel = new JPanel();
+        
         //container
         cp = getContentPane();
         cp.setLayout(new GridLayout(2, 1));
         cp.add(initPanel, BorderLayout.CENTER);
+        cp.add(tablePanel, BorderLayout.CENTER);
     }
 
     class EventManager implements ActionListener {
@@ -72,8 +74,9 @@ public class ventana extends JFrame {
             if ((event.getSource() == printB) && (panelCount == 0)) {
                 try {
                     panelCount = 1;
+                    tablePanel.removeAll();
                     firstYear = Double.parseDouble(initYearTF.getText().substring(0, 4));
-                    numberOfYears = Integer.parseInt(noYearsTF.getText().substring(0, 1));
+                    numberOfYears = Integer.parseInt(noYearsTF.getText());
                     yearToPredict = Double.parseDouble(yearToPredictTF.getText().substring(0, 4));
 
                     if ((firstYear < 1890) || (firstYear > 2000)) {
@@ -105,25 +108,26 @@ public class ventana extends JFrame {
 
                     //table model
                     table = new JTable(data, columnNames);
-                    table.setBounds(260, 0, 100, 100);
-                    //scrollpane = new JScrollPane(table);
+                    scrollpane = new JScrollPane(table);
+                    scrollpane.setBounds(175, 0, 250, 100);
                     calculateB = new JButton("Calcular");
                     calculateB.setBounds(260, 150, 80, 25);
                     calculateB.addActionListener(manager);
 
                     //position table panel
                     //cp.remove(tablePanel);
-                    tablePanel = new JPanel();
+                    //tablePanel = new JPanel();
                     tablePanel.setLayout(null);
-                    tablePanel.add(table);
+                    tablePanel.add(scrollpane);
                     tablePanel.add(calculateB);
 
                     //container
-                    cp.add(tablePanel, BorderLayout.CENTER);
+                    //cp.add(tablePanel, BorderLayout.CENTER);
 
                     //refresh view
                     tablePanel.updateUI();
                     tablePanel.repaint();
+
                 } catch (Exception e) {
                     JOptionPane.showMessageDialog(ventana.this, e, "Error de Entrada", JOptionPane.ERROR_MESSAGE);
                 }
@@ -159,10 +163,10 @@ public class ventana extends JFrame {
                     double m = ec.getSlope();
                     double b = ec.getOrigin();
                     double formula = (m * yearToPredict) + b;
-                    JOptionPane.showMessageDialog(ventana.this, "\n\n------------\nAño   |   ºC\n------------\n".concat(String.format("%.0f", yearToPredict)).concat("  |   ").concat(String.format("%.2f", formula)).concat("\n------------"), "Resultado", JOptionPane.OK_OPTION);
+                    JOptionPane.showMessageDialog(ventana.this, "\n\n------------\nAño   |   ºC\n------------\n".concat(String.format("%.0f", yearToPredict)).concat("  |   ").concat(String.format("%.2f", formula)).concat("\n------------"), "Resultado", JOptionPane.PLAIN_MESSAGE);
                     //System.out.println("\n\n-------------------\nAño   |   ºC\n-------------------\n" + String.format("%.0f", yearToPredict) + "  |   " + String.format("%.2f", formula) + "\n-------------------");
-
                 } catch (Exception e) {
+                    scrollpane.setBackground(Color.red);
                     JOptionPane.showMessageDialog(ventana.this, e, "Error de Entrada", JOptionPane.ERROR_MESSAGE);
                 }
             }
