@@ -19,13 +19,14 @@ public class ventana extends JFrame {
     private String[][] data;
     private EventManager manager = new EventManager();
     private double firstYear;
-    private int numberOfYears;
+    private int numberOfYears, panelCount = 0;
     private double yearToPredict;
 
     ventana() {
         super("Temperatura por año");
         setSize(600, 550);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
         setResizable(true);
 
         //position init panel
@@ -68,29 +69,37 @@ public class ventana extends JFrame {
     class EventManager implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent event) {
-            if (event.getSource() == printB) {
+            if ((event.getSource() == printB) && (panelCount == 0)) {
                 try {
+                    panelCount = 1;
                     firstYear = Double.parseDouble(initYearTF.getText().substring(0, 4));
                     numberOfYears = Integer.parseInt(noYearsTF.getText().substring(0, 1));
                     yearToPredict = Double.parseDouble(yearToPredictTF.getText().substring(0, 4));
 
                     if ((firstYear < 1890) || (firstYear > 2000)) {
+                        initYearTF.setBackground(Color.red);
                         throw new StringIndexOutOfBoundsException("\n\nAños válidos: 1890-2000.");
                     }
                     if (numberOfYears > (((2010 - firstYear) / 10) + 1)) {
+                        noYearsTF.setBackground(Color.red);
                         throw new StringIndexOutOfBoundsException("\n\n# de años no pueden pasar del 2010, a partir de la fecha inicial.");
                     }
                     if (numberOfYears < 2) {
+                        noYearsTF.setBackground(Color.red);
                         throw new StringIndexOutOfBoundsException("\n\n# de años debe ser mayor a 1.");
                     }
                     if (yearToPredict < 2010) {
+                        yearToPredictTF.setBackground(Color.red);
                         throw new StringIndexOutOfBoundsException("\n\nAño a predicar debe ser mayor al 2010");
                     }
+                    initYearTF.setBackground(Color.white);
+                    noYearsTF.setBackground(Color.white);
+                    yearToPredictTF.setBackground(Color.white);
                     double temp = firstYear;
                     data = new String[numberOfYears][2];
                     for (int i = 0; i < numberOfYears; i++) {
                         data[i][0] = String.valueOf(temp);
-                        data[i][1] = String.valueOf(i + 1);
+                        data[i][1] = String.valueOf(" ");
                         temp += 10;
                     }
 
@@ -98,19 +107,18 @@ public class ventana extends JFrame {
                     table = new JTable(data, columnNames);
                     table.setBounds(260, 0, 100, 100);
                     //scrollpane = new JScrollPane(table);
-
-
-                    //position table panel
-                    tablePanel = new JPanel();
-                    tablePanel.setLayout(null);
                     calculateB = new JButton("Calcular");
                     calculateB.setBounds(260, 150, 80, 25);
                     calculateB.addActionListener(manager);
-                    //tablePanel.setLayout(null);
 
-                    //table = new JTable(data, columnNames);
+                    //position table panel
+                    //cp.remove(tablePanel);
+                    tablePanel = new JPanel();
+                    tablePanel.setLayout(null);
                     tablePanel.add(table);
                     tablePanel.add(calculateB);
+
+                    //container
                     cp.add(tablePanel, BorderLayout.CENTER);
 
                     //refresh view
@@ -119,37 +127,45 @@ public class ventana extends JFrame {
                 } catch (Exception e) {
                     JOptionPane.showMessageDialog(ventana.this, e, "Error de Entrada", JOptionPane.ERROR_MESSAGE);
                 }
+            } else {
+                //cp.remove(tablePanel);
+                panelCount = 0;
+                //actionPerformed(event);
             }
 
-            if (event.getSource() == calculateB) {
-                double temp = firstYear;
+            if ((event.getSource() == calculateB) && (panelCount == 0)) {
+                try {
+                    linearRegression ec = new linearRegression();
+                    double temp = firstYear;
+                    double[] arrayX = new double[numberOfYears];
+                    double[] arrayY = new double[numberOfYears];
+                    int i = 0;
+                    String value;
+                    do {
+                        arrayX[i] = temp;
+                        value = table.getValueAt(i, 1).toString();
+                        arrayY[i] = Double.valueOf(value);
+                        temp += 10;
+                        i++;
+                    } while (temp <= (firstYear + (10 * (numberOfYears - 1))));
 
-                linearRegression ec = new linearRegression();
-                double[] arrayX = new double[numberOfYears];
-                double[] arrayY = new double[numberOfYears];
-                int i = 0;
-                do {
-                    arrayX[i] = temp;
-                    arrayY[i] = (double) table.getSelectedColumn();
-                    temp += 10;
-                    i++;
-                } while (temp <= (firstYear + (10 * (numberOfYears - 1))));
+                    //implements linear regression method
+                    ec.fsumX(arrayX);
+                    ec.fsumXSquared(arrayX);
+                    ec.fsumY(arrayY);
+                    ec.fsumXY(arrayX, arrayY);
+                    ec.setSlope();
+                    ec.setOrigin();
+                    double m = ec.getSlope();
+                    double b = ec.getOrigin();
+                    double formula = (m * yearToPredict) + b;
+                    JOptionPane.showMessageDialog(ventana.this, "\n\n------------\nAño   |   ºC\n------------\n".concat(String.format("%.0f", yearToPredict)).concat("  |   ").concat(String.format("%.2f", formula)).concat("\n------------"), "Resultado", JOptionPane.OK_OPTION);
+                    //System.out.println("\n\n-------------------\nAño   |   ºC\n-------------------\n" + String.format("%.0f", yearToPredict) + "  |   " + String.format("%.2f", formula) + "\n-------------------");
 
-                //implements linear regression method
-                ec.fsumX(arrayX);
-                ec.fsumXSquared(arrayX);
-                ec.fsumY(arrayY);
-                ec.fsumXY(arrayX, arrayY);
-                ec.setSlope();
-                ec.setOrigin();
-                double m = ec.getSlope();
-                double b = ec.getOrigin();
-                double formula = (m * yearToPredict) + b;
-                System.out.println("\n\n-------------------\nAño   |   ºC\n-------------------\n" + String.format("%.0f", yearToPredict) + "  |   " + String.format("%.2f", formula) + "\n-------------------");
-
-
+                } catch (Exception e) {
+                    JOptionPane.showMessageDialog(ventana.this, e, "Error de Entrada", JOptionPane.ERROR_MESSAGE);
+                }
             }
-
         }
     }
 }
