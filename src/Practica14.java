@@ -3,8 +3,12 @@ import java.util.Scanner;
 
 
 public class Practica14 {
-
     public static void main(String[] args) {
+        ventana ven = new ventana();
+        ven.setVisible(true);
+    }
+}
+/*    public static void main(String[] args) {
         linearRegression ec = new linearRegression();
         Scanner line = new Scanner(System.in);
         double year;
@@ -18,6 +22,11 @@ public class Practica14 {
         do {
             System.out.println("Cuántos años quiere ingresar?");
             anios = line.nextInt();
+            if (anios<=1){
+                System.out.println("Tiene que ingresar mímino 2 años");
+            anios = line.nextInt();
+        }
+
         } while (anios > (((2010 - year) / 10) + 1));
 
         int i = 0;
@@ -44,6 +53,5 @@ public class Practica14 {
         System.out.println("Ingresa el año para el que se quiere estimar la temperatura: ");
         year = line.nextDouble();
         double formula = (m * year) + b;
-        System.out.println("\n\n-------------------\nAño      |   ºC\n-------------------\n" + String.format("%.0f", year) + "  |   " + String.format("%.2f", formula) + "\n-------------------");
-    }
-}
+        System.out.println("\n\n-------------------\nAño   |   ºC\n-------------------\n" + String.format("%.0f", year) + "  |   " + String.format("%.2f", formula) + "\n-------------------");
+    }*/
