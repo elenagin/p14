@@ -3,17 +3,19 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+@SuppressWarnings({"ALL", "CanBeFinal"})
 public class ventana extends JFrame {
     private JButton printB, calculateB;
     @SuppressWarnings("FieldCanBeLocal")
     private JPanel initPanel, tablePanel;
-    private JScrollPane scrollpane;
+    //private JScrollPane scrollpane;
     private JTable table;
     @SuppressWarnings("FieldCanBeLocal")
     private JLabel title, initYearL, noYearsL, yearToPredictL;
     private JTextField initYearTF, noYearsTF, yearToPredictTF;
     private Container cp;
     private String[] columnNames = new String[]{"Año", "Temperatura"};
+    @SuppressWarnings("FieldCanBeLocal")
     private String[][] data;
     private EventManager manager = new EventManager();
     private double firstYear;
