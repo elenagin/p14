@@ -1,7 +1,4 @@
-import java.util.Scanner;
 //13.68, 13.67, 13.59, 13.64, 13.76, 13.89, 13.95, 13.92, 13.93, 13.95, 14.12, 14.26, 14.47
-
-
 public class Practica14 {
     public static void main(String[] args) {
         ventana ven = new ventana();
