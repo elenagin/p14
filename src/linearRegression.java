@@ -27,14 +27,17 @@ class linearRegression {
     }
 
     void setSlope() {
+
         m = ((arrayLength * sumXY) - (sumX * sumY)) / ((arrayLength * sumXSquared) - (sumX * sumX));
     }
 
     double getSlope() {
+
         return m;
     }
 
     void setOrigin() {
+
         b = (sumY - (m * sumX)) / arrayLength;
     }
 
